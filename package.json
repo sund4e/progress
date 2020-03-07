@@ -8,7 +8,11 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@aws-amplify/api": "^2.1.6",
+    "@aws-amplify/pubsub": "^2.1.7",
+    "@react-native-community/netinfo": "~3.2.1",
     "expo": "^35.0.0",
+    "nodenv": "^0.1.0",
     "react": "16.8.3",
     "react-dom": "16.8.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
