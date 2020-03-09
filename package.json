@@ -6,7 +6,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "lint": "eslint './*' --ignore-pattern aws-exports.js"
+    "lint": "eslint . --ignore-pattern aws-exports.js --ext .ts,.tsx"
   },
   "dependencies": {
     "@aws-amplify/api": "^2.1.6",
