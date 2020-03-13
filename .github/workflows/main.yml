@@ -1,0 +1,11 @@
+name: Linters
+on: [pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: ESLint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Linters
+        uses: ./.github/actions
