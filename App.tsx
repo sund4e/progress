@@ -10,7 +10,7 @@ import config from './aws-exports';
 API.configure(config); // Configure Amplify
 PubSub.configure(config);
 
-const reducer = (state, action) => {
+const reducer = (state, action): { todos: CreateTodoInput[] } => {
   switch (action.type) {
     case 'QUERY':
       return { ...state, todos: action.todos };
@@ -21,41 +21,6 @@ const reducer = (state, action) => {
   }
 };
 
-export default function App() {
-  const [state, dispatch] = useReducer(reducer, { todos: [] });
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const click = async () => {
-    const todo: CreateTodoInput = {
-      name: 'testing',
-      description: 'just testing'
-    };
-    await API.graphql(graphqlOperation(createTodo, { input: todo }));
-    await getData();
-  };
-
-  async function getData() {
-    const todoData = await API.graphql(graphqlOperation(listTodos));
-    dispatch({ type: 'QUERY', todos: todoData.data.listTodos.items });
-  }
-  console.log('hello');
-
-  return (
-    <View style={styles.container}>
-      <Text>Testing what happens :D</Text>
-      <Button onPress={click} title={'Press me'} />
-      {state.todos.map((todo, i) => (
-        <Text key={todo.id}>
-          {todo.name} : {todo.description}
-        </Text>
-      ))}
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -64,3 +29,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   }
 });
+
+export default function App(): React.ReactElement {
+  const [state, dispatch] = useReducer(reducer, { todos: [] });
+
+  async function getData(): Promise<void> {
+    const todoData = await API.graphql(graphqlOperation(listTodos));
+    dispatch({ type: 'QUERY', todos: todoData.data.listTodos.items });
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const click = async (): Promise<void> => {
+    const todo: CreateTodoInput = {
+      name: 'testing',
+      description: 'just testing'
+    };
+    await API.graphql(graphqlOperation(createTodo, { input: todo }));
+    await getData();
+  };
+
+  console.log('hello');
+
+  return (
+    <View style={styles.container}>
+      <Text>Testing what happens :D</Text>
+      <Button onPress={click} title={'Press me'} />
+      {state.todos.map(todo => (
+        <Text key={todo.id}>
+          {todo.name} : {todo.description}
+        </Text>
+      ))}
+    </View>
+  );
+}
