@@ -2,7 +2,7 @@ import React from 'react';
 import { TextInput as NativeInput, StyleSheet } from 'react-native';
 import { colors } from '../../styles';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   empty: {
     borderColor: colors.light,
     color: colors.light,
