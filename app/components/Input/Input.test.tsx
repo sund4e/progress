@@ -1,7 +1,7 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 import { TextInput } from 'react-native';
-import Input, { styles } from './textInput';
+import Input, { styles } from './Input';
 
 jest.mock('TextInput', () => {
   const RealComponent = require.requireActual('TextInput');
@@ -10,7 +10,7 @@ jest.mock('TextInput', () => {
 
   class TextInput extends React.Component {
     setNativeProps = setNativePropsSpy;
-    render() {
+    render(): React.ReactElement {
       return <div />;
     }
   }
