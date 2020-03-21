@@ -3,5 +3,5 @@
 echo "Running linters"
 cd "$GITHUB_WORKSPACE"
 yarn install
-::command
+$1
 exit
