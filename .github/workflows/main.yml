@@ -10,7 +10,7 @@ jobs:
       - name: Linters
         uses: ./.github/actions
         with:
-          command: 'yarn lint'
+          command: yarn lint
   test:
     runs-on: ubuntu-latest
     name: Tests
@@ -20,4 +20,4 @@ jobs:
       - name: Tests
         uses: ./.github/actions
         with:
-          command: 'yarn test'
+          command: yarn test
