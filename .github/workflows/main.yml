@@ -9,3 +9,5 @@ jobs:
         uses: actions/checkout@v2
       - name: Linters
         uses: ./.github/actions
+        with:
+          command: 'yarn lint'
