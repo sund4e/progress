@@ -6,7 +6,7 @@ export const colors = {
   light: '#838081'
 };
 
-const darkBlue = {
+export const darkBlue = {
   dark: '#141414',
   primary: '#182033',
   highlight: '#494F69',
@@ -14,7 +14,7 @@ const darkBlue = {
   light: '#97858E'
 };
 
-const lightBlue = {
+export const lightBlue = {
   dark: '#141414',
   primary: '#343958',
   highlight: '#54668E',
@@ -22,7 +22,7 @@ const lightBlue = {
   light: '#E8E8E8'
 };
 
-const green = {
+export const green = {
   dark: '#141414',
   primary: '#1B3929',
   highlight: '#3DC37C',
@@ -30,7 +30,7 @@ const green = {
   light: '#838081'
 };
 
-const orange = {
+export const orange = {
   dark: '#141414',
   primary: '#141414',
   highlight: '#EDDBCC',
@@ -38,7 +38,7 @@ const orange = {
   light: '#CECECE'
 };
 
-const gold = {
+export const gold = {
   dark: '#141414',
   primary: '#141414',
   highlight: '#383838',
