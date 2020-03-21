@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput as NativeInput, StyleSheet } from 'react-native';
+import { TextInput, StyleSheet } from 'react-native';
 import { colors } from '../../styles';
 
 export const styles = StyleSheet.create({
@@ -28,9 +28,9 @@ export const styles = StyleSheet.create({
   }
 });
 
-export default function TextInput(): React.ReactElement {
+export default function Input(): React.ReactElement {
   const [value, onChangeText] = React.useState('TEsting');
-  const inputRef = React.useRef<NativeInput>();
+  const inputRef = React.useRef<TextInput>();
 
   const onBlur = (): void => {
     const isEmpty = value === '';
@@ -50,7 +50,7 @@ export default function TextInput(): React.ReactElement {
   };
 
   return (
-    <NativeInput
+    <TextInput
       ref={inputRef}
       style={{ ...styles.input, ...styles.unfocused }}
       onChangeText={(text): void => onChangeText(text)}

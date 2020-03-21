@@ -5,7 +5,7 @@ import PubSub from '@aws-amplify/pubsub';
 import { createTodo } from '../src/graphql/mutations';
 import { CreateTodoInput } from '../src/API';
 import { listTodos } from '../src/graphql/queries';
-import TextInput from './components/textInput/textInput';
+import Input from './components/Input/Input';
 import Container from './components/container/container';
 import { colors } from './styles';
 
@@ -63,9 +63,9 @@ export default function App(): React.ReactElement {
     <View style={styles.container}>
       <Text>Testing what happens :D</Text>
       <Container>
-        <TextInput />
-        <TextInput />
-        <TextInput />
+        <Input />
+        <Input />
+        <Input />
       </Container>
       <Button onPress={click} title={'Press me'} />
       {state.todos.map(todo => (
