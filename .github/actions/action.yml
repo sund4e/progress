@@ -1,5 +1,9 @@
-name: 'Lint'
-description: 'Run eslint'
+name: 'Action'
+description: 'Run run command'
+inputs:
+  command:
+    description: 'Command to run'
+    required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
