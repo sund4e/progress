@@ -1,7 +1,7 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
+import renderer, { ReactTestInstance } from 'react-test-renderer';
 import { TextInput } from 'react-native';
-import Input, { styles } from './Input';
+import Input, { styles, Props } from './Input';
 
 jest.mock('TextInput', () => {
   const RealComponent = require.requireActual('TextInput');
@@ -18,22 +18,45 @@ jest.mock('TextInput', () => {
   return TextInput;
 });
 
+const render = (overrideProps: Partial<Props> = {}): ReactTestInstance => {
+  const props = {
+    value: 'Jee',
+    onChangeValue: (): void => {},
+    ...overrideProps
+  };
+  return renderer.create(<Input {...props} />).root;
+};
+
 describe('Input', () => {
-  it('updates native component style upon focus ', () => {
-    const testRenderer = renderer.create(<Input />);
-    const element = testRenderer.root;
-    element.findByType(TextInput).props.onFocus();
-    expect(
-      element.findByType(TextInput).instance.setNativeProps
-    ).toHaveBeenCalledWith({ style: styles.focused });
+  describe('styles', () => {
+    it('updates native component style upon focus ', () => {
+      const element = render();
+      element.findByType(TextInput).props.onFocus();
+      expect(
+        element.findByType(TextInput).instance.setNativeProps
+      ).toHaveBeenCalledWith({ style: styles.focused });
+    });
+
+    it('updates native component style upon blur ', () => {
+      const element = render();
+      element.findByType(TextInput).props.onBlur();
+      expect(
+        element.findByType(TextInput).instance.setNativeProps
+      ).toHaveBeenCalledWith({ style: styles.unfocused });
+    });
   });
 
-  it('updates native component style upon blur ', () => {
-    const testRenderer = renderer.create(<Input />);
-    const element = testRenderer.root;
-    element.findByType(TextInput).props.onBlur();
-    expect(
-      element.findByType(TextInput).instance.setNativeProps
-    ).toHaveBeenCalledWith({ style: styles.unfocused });
+  it('renders passed value', () => {
+    const value = 'Testing value';
+    const element = render({ value });
+    expect(element.findByType(TextInput).props.value).toEqual(value);
+  });
+
+  it('calls onChangeValue upon value change', () => {
+    const newValue = 'New value';
+    const onChangeValue = jest.fn();
+    const element = render({ onChangeValue });
+    element.findByType(TextInput).props.onChangeText(newValue);
+    expect(onChangeValue).toHaveBeenCalledWith(newValue);
   });
 });
