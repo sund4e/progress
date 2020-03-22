@@ -1,7 +1,12 @@
 #!/bin/sh -l
 
-echo "Running linters"
 cd "$GITHUB_WORKSPACE"
+
+#write dummy aws-exports.js so that project can be compiles
+echo "export default {};" > aws-exports.js
+
 yarn install
-yarn lint
+
+# run argument passed to the srcipt
+$1
 exit

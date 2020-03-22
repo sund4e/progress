@@ -6,7 +6,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "lint": "eslint . --ignore-pattern aws-exports.js --ext .ts,.tsx",
+    "lint": "eslint . --ignore-pattern aws-exports.js --ext .ts,.tsx && tsc --noEmit -p .",
     "test": "jest"
   },
   "jest": {
