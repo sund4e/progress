@@ -37,12 +37,20 @@ describe('Input', () => {
       ).toHaveBeenCalledWith({ style: styles.focused });
     });
 
-    it('updates native component style upon blur ', () => {
-      const element = render();
+    it('updates native component style correctly upon blur if value is not empty', () => {
+      const element = render({ value: 'something' });
       element.findByType(TextInput).props.onBlur();
       expect(
         element.findByType(TextInput).instance.setNativeProps
       ).toHaveBeenCalledWith({ style: styles.unfocused });
+    });
+
+    it('updates native component style correctly upon blur if value is empty', () => {
+      const element = render({ value: '' });
+      element.findByType(TextInput).props.onBlur();
+      expect(
+        element.findByType(TextInput).instance.setNativeProps
+      ).toHaveBeenCalledWith({ style: styles.empty });
     });
   });
 
