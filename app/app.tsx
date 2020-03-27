@@ -5,8 +5,7 @@ import PubSub from '@aws-amplify/pubsub';
 import { createTodo } from '../src/graphql/mutations';
 import { CreateTodoInput } from '../src/API';
 import { listTodos } from '../src/graphql/queries';
-import Input from './components/Input/Input';
-import Container from './components/container/container';
+import CreateWorkoutView from './views/CreateWorkout';
 import { colors } from './styles';
 
 import config from '../aws-exports';
@@ -62,11 +61,7 @@ export default function App(): React.ReactElement {
   return (
     <View style={styles.container}>
       <Text>Testing what happens :D</Text>
-      <Container>
-        <Input />
-        <Input />
-        <Input />
-      </Container>
+      <CreateWorkoutView workout={['testing', 'moves', 'jee']} />
       <Button onPress={click} title={'Press me'} />
       {state.todos.map(todo => (
         <Text key={todo.id}>
