@@ -29,8 +29,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dark,
     padding: 20,
     justifyContent: 'center',
-    borderColor: 'red',
-    borderWidth: 1,
     fontSize: 20
   }
 });
@@ -60,14 +58,14 @@ export default function App(): React.ReactElement {
 
   return (
     <View style={styles.container}>
-      <Text>Testing what happens :D</Text>
+      {/* <Text>Testing what happens :D</Text> */}
       <CreateWorkoutView workout={['testing', 'moves', 'jee']} />
-      <Button onPress={click} title={'Press me'} />
+      {/* <Button onPress={click} title={'Press me'} />
       {state.todos.map(todo => (
         <Text key={todo.id}>
           {todo.name} : {todo.description}
         </Text>
-      ))}
+      ))} */}
     </View>
   );
 }

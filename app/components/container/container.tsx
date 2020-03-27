@@ -9,9 +9,7 @@ import {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    borderColor: 'blue',
-    borderWidth: 1
+    flexDirection: 'column'
   }
 });
 
