@@ -28,8 +28,15 @@ export const styles = StyleSheet.create({
   }
 });
 
-export default function Input(): React.ReactElement {
-  const [value, onChangeText] = React.useState('TEsting');
+export type Props = {
+  value: string;
+  onChangeValue: (newValue: string) => void;
+};
+
+export default function Input({
+  value,
+  onChangeValue
+}: Props): React.ReactElement {
   const inputRef = React.useRef<TextInput>();
 
   const onBlur = (): void => {
@@ -53,7 +60,7 @@ export default function Input(): React.ReactElement {
     <TextInput
       ref={inputRef}
       style={{ ...styles.input, ...styles.unfocused }}
-      onChangeText={(text): void => onChangeText(text)}
+      onChangeText={(text): void => onChangeValue(text)}
       placeholder={'Name your move'}
       placeholderTextColor={colors.light}
       value={value}

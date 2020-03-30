@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View,
+  KeyboardAvoidingView,
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard
@@ -10,8 +10,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    borderColor: 'blue',
-    borderWidth: 1
+    justifyContent: 'space-between',
+    alignItems: 'center'
   }
 });
 
@@ -22,7 +22,9 @@ type Props = {
 export default function Container({ children }: Props): React.ReactElement {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>{children}</View>
+      <KeyboardAvoidingView style={styles.container} behavior={'padding'}>
+        {children}
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
