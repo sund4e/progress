@@ -5,6 +5,7 @@ import { colors } from '../../styles';
 
 export type Props = {
   name: string;
+  onPress: () => void;
 };
 
 export const styles = StyleSheet.create({
@@ -16,7 +17,7 @@ export const styles = StyleSheet.create({
 export const colorUnPressed = colors.highlight;
 export const colorPressed = colors.accent;
 
-const Icon = ({ name }: Props): React.ReactElement => {
+const Icon = ({ name, onPress }: Props): React.ReactElement => {
   const [color, setColor] = React.useState(colorUnPressed);
   const onPressIn = (): void => {
     setColor(colorPressed);
@@ -31,6 +32,7 @@ const Icon = ({ name }: Props): React.ReactElement => {
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       style={styles.container}
+      onPress={onPress}
     >
       <SimpleLineIcons name={name} size={32} color={color} />
     </TouchableHighlight>
