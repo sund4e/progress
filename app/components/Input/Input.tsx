@@ -31,11 +31,13 @@ export const styles = StyleSheet.create({
 export type Props = {
   value: string;
   onChangeValue: (newValue: string) => void;
+  style?: object;
 };
 
 export default function Input({
   value,
-  onChangeValue
+  onChangeValue,
+  style
 }: Props): React.ReactElement {
   const inputRef = React.useRef<TextInput>();
 
@@ -59,7 +61,7 @@ export default function Input({
   return (
     <TextInput
       ref={inputRef}
-      style={{ ...styles.input, ...styles.unfocused }}
+      style={{ ...styles.input, ...styles.unfocused, ...style }}
       onChangeText={(text): void => onChangeValue(text)}
       placeholder={'Name your move'}
       placeholderTextColor={colors.light}
