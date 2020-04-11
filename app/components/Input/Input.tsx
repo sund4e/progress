@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  TextInput,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Text
-} from 'react-native';
+import { TextInput, StyleSheet, Text } from 'react-native';
 import { colors } from '../../styles';
 
 export const styles = StyleSheet.create({
@@ -35,52 +30,41 @@ export const styles = StyleSheet.create({
 export type Props = {
   value: string;
   onChangeValue: (newValue: string) => void;
-  focusOnMount?: boolean;
+  isFocused: boolean;
   style?: object;
 };
 
 export default function Input({
   value,
   onChangeValue,
-  focusOnMount,
+  isFocused,
   style
 }: Props): React.ReactElement {
-  const [isAcive, setIsActive] = React.useState(focusOnMount);
   const inputRef = React.useRef<TextInput>();
 
-  const onBlur = (): void => {
-    setIsActive(false);
-  };
-
-  const onFocus = (): void => {
-    setIsActive(true);
-    if (inputRef.current) {
+  React.useEffect(() => {
+    if (inputRef.current && isFocused) {
       inputRef.current.focus();
       inputRef.current.setNativeProps({
         style: styles.focused
       });
     }
-  };
+  });
 
   const unfocusedStyle = { ...styles.input, ...styles.unfocused, ...style };
   const emptyStyle = { ...styles.input, ...styles.empty, ...style };
   const isEmpty = value === '';
 
-  return !isAcive ? (
-    <TouchableWithoutFeedback onLongPress={onFocus}>
-      <Text style={isEmpty ? emptyStyle : unfocusedStyle}>
-        {isEmpty ? 'Name your move' : value}
-      </Text>
-    </TouchableWithoutFeedback>
+  return !isFocused ? (
+    <Text style={isEmpty ? emptyStyle : unfocusedStyle}>
+      {isEmpty ? 'Name your move' : value}
+    </Text>
   ) : (
     <TextInput
       ref={inputRef}
       style={unfocusedStyle}
       onChangeText={(text): void => onChangeValue(text)}
-      placeholderTextColor={colors.light}
       value={value}
-      onBlur={onBlur}
-      onFocus={onFocus}
     />
   );
 }

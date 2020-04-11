@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer, { ReactTestInstance, act } from 'react-test-renderer';
-import { TextInput } from 'react-native';
+import { TextInput, ActionSheetIOS } from 'react-native';
 import Input, { styles, Props } from './Input';
 
 jest.mock('TextInput', () => {
@@ -24,31 +24,41 @@ const render = (overrideProps: Partial<Props> = {}): ReactTestInstance => {
   const props = {
     value: 'Jee',
     onChangeValue: (): void => {},
+    isFocused: false,
     ...overrideProps
   };
-  return renderer.create(<Input {...props} />).root;
+
+  let element;
+  act(() => {
+    element = renderer.create(<Input {...props} />);
+  });
+
+  return element.root;
 };
 
 describe('Input', () => {
-  describe('styles', () => {
-    it('updates native component style upon focus ', () => {
-      const element = render({ focusOnMount: true });
-      element.findByType(TextInput).props.onFocus();
-      expect(
-        element.findByType(TextInput).instance.setNativeProps
-      ).toHaveBeenCalledWith({ style: styles.focused });
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  describe('focusOnMount', () => {
-    it('with undefined does not render TextInput', () => {
-      const element = render({ focusOnMount: undefined });
+  describe('isFocused', () => {
+    it('with false does not render TextInput', () => {
+      const element = render({ isFocused: false });
       expect(() => element.findByType(TextInput)).toThrow();
     });
 
-    it('with true renderd TextInput', () => {
-      const element = render({ focusOnMount: true });
-      expect(element.findByType(TextInput)).toBeDefined();
+    it('with true renders and focuses TextInput', () => {
+      const element = render({ isFocused: true });
+      const textInput = element.findByType(TextInput);
+      expect(textInput).toBeDefined();
+      expect(textInput.instance.focus).toHaveBeenCalled();
+    });
+
+    it('with true sets native component style', () => {
+      const element = render({ isFocused: true });
+      expect(
+        element.findByType(TextInput).instance.setNativeProps
+      ).toHaveBeenCalledWith({ style: styles.focused });
     });
   });
 
@@ -68,29 +78,10 @@ describe('Input', () => {
     });
   });
 
-  it('renders TextInput upon long press', () => {
-    const element = render();
-    act(() => {
-      (element.children[0] as ReactTestInstance).props.onLongPress();
-    });
-    expect(element.findByType(TextInput)).toBeDefined();
-  });
-
-  it('does not render text input when blurred', () => {
-    const element = render({ value: 'something', focusOnMount: true });
-    act(() => {
-      element.findByType(TextInput).props.onBlur();
-    });
-    expect(() => element.findByType(TextInput)).toThrow();
-  });
-
   it('calls onChangeValue upon value change', () => {
     const newValue = 'New value';
     const onChangeValue = jest.fn();
-    const element = render({ onChangeValue });
-    act(() => {
-      (element.children[0] as ReactTestInstance).props.onLongPress();
-    });
+    const element = render({ onChangeValue, isFocused: true });
     element.findByType(TextInput).props.onChangeText(newValue);
     expect(onChangeValue).toHaveBeenCalledWith(newValue);
   });
