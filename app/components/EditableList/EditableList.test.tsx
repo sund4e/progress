@@ -1,25 +1,31 @@
 import React from 'react';
 import renderer, { ReactTestInstance, act } from 'react-test-renderer';
-import { View } from 'react-native';
+import { View, TouchableWithoutFeedback } from 'react-native';
 
-import EditableList, { Props } from './EditableList';
+import EditableList, { Props, ItemRendererProps } from './EditableList';
 
 const ChildComponent = ({
   keyValue,
-  value
+  value,
+  isFocused
 }: {
   keyValue: string;
   value: string;
+  isFocused: boolean;
 }): React.ReactElement => {
-  return <View key={keyValue}>{value}</View>;
+  return <View key={keyValue}>{isFocused && value}</View>;
 };
 
 const render = (override: Partial<Props>): ReactTestInstance => {
   const items = new Map();
   const props = {
     items,
-    itemRenderer: (key, value): React.ReactElement => (
-      <ChildComponent keyValue={key} value={value} />
+    itemRenderer: (props: ItemRendererProps): React.ReactElement => (
+      <ChildComponent
+        keyValue={props.key}
+        value={props.value}
+        isFocused={props.isFocused}
+      />
     ),
     onRemoveItem: (): void => {},
     ...override
@@ -49,5 +55,38 @@ describe('EditableList', () => {
       element.findByProps({ name: 'minus' }).props.onPress();
     });
     expect(onRemoveItem).toHaveBeenCalledWith(itemKey);
+  });
+
+  describe('itemRenderer isFocused', () => {
+    const items = new Map([
+      ['key1', 'value1'],
+      ['key2', 'value2']
+    ]);
+    const element = render({ items });
+    const getFirstRenderedItem = (element): ReactTestInstance => {
+      return element.findAllByType(TouchableWithoutFeedback)[0];
+    };
+
+    it('passes initially false', () => {
+      expect(
+        getFirstRenderedItem(element).findByType(ChildComponent).props.isFocused
+      ).toBeFalsy();
+    });
+
+    it('passes true upon long press for the item', () => {
+      act(() => getFirstRenderedItem(element).props.onLongPress());
+      expect(
+        getFirstRenderedItem(element).findByType(ChildComponent).props.isFocused
+      ).toBeTruthy();
+    });
+
+    it('passes false upon pressing other item', () => {
+      act(() =>
+        element.findAllByType(TouchableWithoutFeedback)[1].props.onPressIn()
+      );
+      expect(
+        getFirstRenderedItem(element).findByType(ChildComponent).props.isFocused
+      ).toBeFalsy();
+    });
   });
 });
