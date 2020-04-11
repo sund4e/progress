@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer, { ReactTestInstance, act } from 'react-test-renderer';
-import { TextInput, ActionSheetIOS } from 'react-native';
+import { TextInput } from 'react-native';
 import Input, { styles, Props } from './Input';
 
 jest.mock('TextInput', () => {
