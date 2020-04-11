@@ -61,7 +61,7 @@ const EditableList = ({
             onLongPress={(): void => {
               setFocusedItem(key);
             }}
-            onPressIn={(): void => onPressItem(key)}
+            onPress={(): void => onPressItem(key)}
           >
             <View key={key} style={styles.item}>
               {itemRenderer({ key, value, isFocused })}

@@ -82,7 +82,7 @@ describe('EditableList', () => {
 
     it('passes false upon pressing other item', () => {
       act(() =>
-        element.findAllByType(TouchableWithoutFeedback)[1].props.onPressIn()
+        element.findAllByType(TouchableWithoutFeedback)[1].props.onPress()
       );
       expect(
         getFirstRenderedItem(element).findByType(ChildComponent).props.isFocused
