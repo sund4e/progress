@@ -46,17 +46,6 @@ describe('EditableList', () => {
     });
   });
 
-  it('calls onItemRemoved when remove button clicked', () => {
-    const itemKey = 'key';
-    const items = new Map([[itemKey, 'value']]);
-    const onRemoveItem = jest.fn();
-    const element = render({ items, onRemoveItem });
-    act(() => {
-      element.findByProps({ name: 'minus' }).props.onPress();
-    });
-    expect(onRemoveItem).toHaveBeenCalledWith(itemKey);
-  });
-
   describe('itemRenderer isFocused', () => {
     const items = new Map([
       ['key1', 'value1'],

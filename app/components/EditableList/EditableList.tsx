@@ -3,7 +3,8 @@ import {
   StyleSheet,
   View,
   FlatList,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  ScrollView
 } from 'react-native';
 import Icon from '../Icon/Icon';
 
@@ -28,55 +29,57 @@ export type ItemRendererProps = {
 export type Props = {
   items: Map<string, string>;
   itemRenderer: (props: ItemRendererProps) => React.ReactElement;
-  onRemoveItem: (key: string) => void;
 };
 
-const EditableList = ({
-  items,
+export type EditableListItemProps = {
+  itemRenderer: () => React.ReactElement;
+  onPress: () => void;
+  onLongPress: () => void;
+};
+
+const EditableListItem = ({
   itemRenderer,
-  onRemoveItem
-}: Props): React.ReactElement => {
-  const [focusedItem, setFocusedItem] = React.useState(undefined);
+  onPress,
+  onLongPress
+}: EditableListItemProps): React.ReactElement => (
+  <TouchableWithoutFeedback
+    onLongPress={onLongPress}
+    onPress={onPress}
+    delayPressIn={50}
+  >
+    <View style={styles.item}>{itemRenderer()}</View>
+  </TouchableWithoutFeedback>
+);
+
+const EditableList = ({ items, itemRenderer }: Props): React.ReactElement => {
+  const [focusedItemKey, setFocusedItemKey] = React.useState(undefined);
 
   const onPressItem = (key: string): void => {
-    if (key !== focusedItem) {
-      setFocusedItem(undefined);
+    if (key !== focusedItemKey) {
+      setFocusedItemKey(undefined);
     }
   };
 
+  const selectItemKey = (key: string): void => {
+    setFocusedItemKey(key);
+  };
+
   return (
-    <FlatList
+    <ScrollView
       style={styles.listContainer}
-      data={Array.from(items)}
       keyboardShouldPersistTaps={'always'}
-      renderItem={({
-        item
-      }: {
-        item: [string, string];
-      }): React.ReactElement => {
-        const [key, value] = item;
-        const isFocused = focusedItem === key;
-        return (
-          <TouchableWithoutFeedback
-            onLongPress={(): void => {
-              setFocusedItem(key);
-            }}
-            onPress={(): void => onPressItem(key)}
-          >
-            <View key={key} style={styles.item}>
-              {itemRenderer({ key, value, isFocused })}
-              <Icon
-                name="minus"
-                onPress={(): void => {
-                  onRemoveItem(key);
-                }}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-        );
-      }}
-      keyExtractor={(item): string => item[0]}
-    />
+    >
+      {Array.from(items).map(([key, value]) => (
+        <EditableListItem
+          key={key}
+          itemRenderer={(): React.ReactElement =>
+            itemRenderer({ key, value, isFocused: key === focusedItemKey })
+          }
+          onLongPress={(): void => selectItemKey(key)}
+          onPress={(): void => onPressItem(key)}
+        />
+      ))}
+    </ScrollView>
   );
 };
 
