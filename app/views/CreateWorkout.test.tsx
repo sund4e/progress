@@ -2,7 +2,10 @@ import React from 'react';
 import renderer, { ReactTestInstance, act } from 'react-test-renderer';
 import CreateWorkout, { Props } from './CreateWorkout';
 import Input from '../components/Input/Input';
-jest.mock('TextInput', () => 'TextInput');
+jest.mock(
+  'react-native/Libraries/Components/TextInput/TextInput',
+  () => 'TextInput'
+);
 
 const render = (overrideProps: Partial<Props> = {}): ReactTestInstance => {
   const props = {
