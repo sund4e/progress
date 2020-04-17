@@ -8,6 +8,7 @@ import Icon, { colorUnPressed, colorPressed, Props } from './Icon';
 const render = (overrideProps: Partial<Props> = {}): ReactTestInstance => {
   const props = {
     name: 'plus',
+    onPress: (): void => {},
     ...overrideProps
   };
   return renderer.create(<Icon {...props} />).root;
@@ -39,5 +40,14 @@ describe('Container', () => {
     expect(element.findByType(SimpleLineIcons).props.color).toEqual(
       colorUnPressed
     );
+  });
+
+  it('calls onPress upon press', () => {
+    const onPress = jest.fn();
+    const element = render({ onPress });
+    act(() => {
+      element.findByType(TouchableHighlight).props.onPress();
+    });
+    expect(onPress).toHaveBeenCalled();
   });
 });

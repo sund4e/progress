@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  KeyboardAvoidingView,
   StyleSheet,
   TouchableWithoutFeedback,
-  Keyboard
+  Keyboard,
+  KeyboardAvoidingView
 } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -22,7 +22,7 @@ type Props = {
 export default function Container({ children }: Props): React.ReactElement {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView style={styles.container} behavior={'padding'}>
+      <KeyboardAvoidingView style={styles.container}>
         {children}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

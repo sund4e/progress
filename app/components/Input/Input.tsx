@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, StyleSheet } from 'react-native';
+import { TextInput, StyleSheet, Text } from 'react-native';
 import { colors } from '../../styles';
 
 export const styles = StyleSheet.create({
@@ -20,7 +20,6 @@ export const styles = StyleSheet.create({
   },
   input: {
     padding: 10,
-    height: 40,
     borderWidth: 1,
     margin: 10,
     borderRadius: 5,
@@ -31,41 +30,41 @@ export const styles = StyleSheet.create({
 export type Props = {
   value: string;
   onChangeValue: (newValue: string) => void;
+  isFocused: boolean;
+  style?: object;
 };
 
 export default function Input({
   value,
-  onChangeValue
+  onChangeValue,
+  isFocused,
+  style
 }: Props): React.ReactElement {
   const inputRef = React.useRef<TextInput>();
 
-  const onBlur = (): void => {
-    const isEmpty = value === '';
-    if (inputRef.current) {
-      inputRef.current.setNativeProps({
-        style: isEmpty ? styles.empty : styles.unfocused
-      });
-    }
-  };
-
-  const onFocus = (): void => {
-    if (inputRef.current) {
+  React.useEffect(() => {
+    if (inputRef.current && isFocused) {
+      inputRef.current.focus();
       inputRef.current.setNativeProps({
         style: styles.focused
       });
     }
-  };
+  });
 
-  return (
+  const unfocusedStyle = { ...styles.input, ...styles.unfocused, ...style };
+  const emptyStyle = { ...styles.input, ...styles.empty, ...style };
+  const isEmpty = value === '';
+
+  return !isFocused ? (
+    <Text style={isEmpty ? emptyStyle : unfocusedStyle}>
+      {isEmpty ? 'Name your move' : value}
+    </Text>
+  ) : (
     <TextInput
       ref={inputRef}
-      style={{ ...styles.input, ...styles.unfocused }}
+      style={unfocusedStyle}
       onChangeText={(text): void => onChangeValue(text)}
-      placeholder={'Name your move'}
-      placeholderTextColor={colors.light}
       value={value}
-      onBlur={onBlur}
-      onFocus={onFocus}
     />
   );
 }
