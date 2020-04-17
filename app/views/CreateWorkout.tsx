@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
 
 export type Props = {
   workout: string[];
-  onSubmitWorkout: (workout: string[]) => void;
+  onSubmitWorkout?: (workout: string[]) => void;
 };
 
 export default function CreateWorkoutView({
