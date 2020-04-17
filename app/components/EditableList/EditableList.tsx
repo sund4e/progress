@@ -2,11 +2,9 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  FlatList,
   TouchableWithoutFeedback,
   ScrollView
 } from 'react-native';
-import Icon from '../Icon/Icon';
 
 export const styles = StyleSheet.create({
   item: {
