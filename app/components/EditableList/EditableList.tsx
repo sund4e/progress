@@ -2,16 +2,14 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  TouchableWithoutFeedback,
-  ScrollView
+  ScrollView,
+  PanResponder,
+  Animated
 } from 'react-native';
 
 export const styles = StyleSheet.create({
   item: {
     flexDirection: 'row'
-  },
-  input: {
-    flexGrow: 2
   },
   listContainer: {
     flexGrow: 1
@@ -31,37 +29,42 @@ export type Props = {
 
 export type EditableListItemProps = {
   itemRenderer: () => React.ReactElement;
-  onPress: () => void;
-  onLongPress: () => void;
 };
 
 const EditableListItem = ({
-  itemRenderer,
-  onPress,
-  onLongPress
-}: EditableListItemProps): React.ReactElement => (
-  <TouchableWithoutFeedback
-    onLongPress={onLongPress}
-    onPress={onPress}
-    delayPressIn={50}
-  >
-    <View style={styles.item}>{itemRenderer()}</View>
-  </TouchableWithoutFeedback>
-);
+  itemRenderer
+}: EditableListItemProps): React.ReactElement => {
+  const position = React.useRef(new Animated.ValueXY()).current;
+
+  const panResponder = React.useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        position.setOffset({
+          x: position.x._value,
+          y: position.y._value
+        });
+      },
+      onPanResponderMove: Animated.event([null, { dy: position.y }]),
+      onPanResponderRelease: () => {
+        position.flattenOffset();
+      }
+    })
+  ).current;
+
+  return (
+    <Animated.View
+      style={{
+        ...position.getLayout()
+      }}
+      {...panResponder.panHandlers}
+    >
+      <View style={styles.item}>{itemRenderer()}</View>
+    </Animated.View>
+  );
+};
 
 const EditableList = ({ items, itemRenderer }: Props): React.ReactElement => {
-  const [focusedItemKey, setFocusedItemKey] = React.useState(undefined);
-
-  const onPressItem = (key: string): void => {
-    if (key !== focusedItemKey) {
-      setFocusedItemKey(undefined);
-    }
-  };
-
-  const selectItemKey = (key: string): void => {
-    setFocusedItemKey(key);
-  };
-
   return (
     <ScrollView
       style={styles.listContainer}
@@ -71,11 +74,9 @@ const EditableList = ({ items, itemRenderer }: Props): React.ReactElement => {
         <EditableListItem
           key={key}
           itemRenderer={(): React.ReactElement =>
-            itemRenderer({ key, value, isFocused: key === focusedItemKey })
+            itemRenderer({ key, value, isFocused: false })
           }
-          onLongPress={(): void => selectItemKey(key)}
-          onPress={(): void => onPressItem(key)}
-        />
+        ></EditableListItem>
       ))}
     </ScrollView>
   );
