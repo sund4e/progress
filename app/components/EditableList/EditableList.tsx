@@ -2,10 +2,12 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView,
+  LayoutAnimation,
   PanResponder,
-  Animated
+  Animated,
+  GestureResponderEvent
 } from 'react-native';
+import { Item, updateItemInList } from '../../helpers/list';
 
 export const styles = StyleSheet.create({
   item: {
@@ -16,69 +18,94 @@ export const styles = StyleSheet.create({
   }
 });
 
-export type ItemRendererProps = {
-  key: string;
-  value: string;
-  isFocused: boolean;
+export type Props<ItemType extends Item> = {
+  items: ItemType[];
+  itemRenderer: (item: ItemType) => React.ReactElement;
 };
 
-export type Props = {
-  items: Map<string, string>;
-  itemRenderer: (props: ItemRendererProps) => React.ReactElement;
+type LayoutPosition = {
+  screenX: number;
+  screenY: number;
+  width: number;
+  height: number;
 };
 
 export type EditableListItemProps = {
   itemRenderer: () => React.ReactElement;
+  onRender: (LayoutPosition) => void;
 };
 
 const EditableListItem = ({
-  itemRenderer
+  itemRenderer,
+  onRender
 }: EditableListItemProps): React.ReactElement => {
-  const position = React.useRef(new Animated.ValueXY()).current;
+  const viewRef = React.useRef<View>();
+
+  const onLayout = (): void => {
+    viewRef.current &&
+      viewRef.current.measure((x, y, width, height, screenX, screenY) => {
+        onRender({ width, height, screenX, screenY });
+      });
+  };
+
+  return (
+    <View ref={viewRef} onLayout={onLayout}>
+      <View style={styles.item}>{itemRenderer()}</View>
+    </View>
+  );
+};
+
+const EditableList = <ItemType extends Item>({
+  items,
+  itemRenderer
+}: Props<ItemType>): React.ReactElement => {
+  const [renderedItems, setRenderedItems] = React.useState<
+    (Item & Partial<LayoutPosition>)[]
+  >(items);
+
+  React.useLayoutEffect(() => {
+    LayoutAnimation.configureNext({
+      ...LayoutAnimation.Presets.easeInEaseOut,
+      duration: 200
+    });
+  });
 
   const panResponder = React.useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
-        position.setOffset({
-          x: position.x._value,
-          y: position.y._value
-        });
+        console.log('Grant');
       },
-      onPanResponderMove: Animated.event([null, { dy: position.y }]),
+      onPanResponderMove: (gestureState: GestureResponderEvent) => {
+        const { locationX, locationY } = gestureState.nativeEvent;
+        console.log('onPanResponderMove', locationX, locationY);
+      },
       onPanResponderRelease: () => {
-        position.flattenOffset();
+        console.log('Release');
       }
     })
   ).current;
 
-  return (
-    <Animated.View
-      style={{
-        ...position.getLayout()
-      }}
-      {...panResponder.panHandlers}
-    >
-      <View style={styles.item}>{itemRenderer()}</View>
-    </Animated.View>
-  );
-};
+  const updateItemPosition = (item: ItemType) => (
+    position: LayoutPosition
+  ): void => {
+    setRenderedItems(updateItemInList({ ...item, ...position }, renderedItems));
+  };
 
-const EditableList = ({ items, itemRenderer }: Props): React.ReactElement => {
   return (
-    <ScrollView
+    <Animated.ScrollView
       style={styles.listContainer}
       keyboardShouldPersistTaps={'always'}
+      {...panResponder.panHandlers}
     >
-      {Array.from(items).map(([key, value]) => (
+      {items.map(item => (
         <EditableListItem
-          key={key}
-          itemRenderer={(): React.ReactElement =>
-            itemRenderer({ key, value, isFocused: false })
-          }
+          key={item.id}
+          itemRenderer={(): React.ReactElement => itemRenderer(item)}
+          onRender={updateItemPosition(item)}
         ></EditableListItem>
       ))}
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };
 
