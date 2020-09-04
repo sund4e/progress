@@ -63,6 +63,10 @@ const EditableList = <ItemType extends Item>({
   type RenderItem = ItemType & { position?: LayoutPosition };
   const [renderedItems, setRenderedItems] = React.useState<RenderItem[]>(items);
 
+  React.useEffect(() => {
+    setRenderedItems(items);
+  }, [items]);
+
   React.useLayoutEffect(() => {
     LayoutAnimation.configureNext({
       ...LayoutAnimation.Presets.easeInEaseOut,
