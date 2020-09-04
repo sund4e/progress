@@ -42,6 +42,7 @@ const EditableListItem = ({
   const viewRef = React.useRef<View>();
 
   const onLayout = (): void => {
+    console.log('onLayout');
     viewRef.current &&
       viewRef.current.measure((x, y, width, height, screenX, screenY) => {
         onRender({ width, height, screenX, screenY });
@@ -59,9 +60,8 @@ const EditableList = <ItemType extends Item>({
   items,
   itemRenderer
 }: Props<ItemType>): React.ReactElement => {
-  const [renderedItems, setRenderedItems] = React.useState<
-    (Item & Partial<LayoutPosition>)[]
-  >(items);
+  type RenderItem = ItemType & { position?: LayoutPosition };
+  const [renderedItems, setRenderedItems] = React.useState<RenderItem[]>(items);
 
   React.useLayoutEffect(() => {
     LayoutAnimation.configureNext({
@@ -86,10 +86,13 @@ const EditableList = <ItemType extends Item>({
     })
   ).current;
 
-  const updateItemPosition = (item: ItemType) => (
+  const updateItemPosition = (
+    item: RenderItem,
     position: LayoutPosition
   ): void => {
-    setRenderedItems(updateItemInList({ ...item, ...position }, renderedItems));
+    setRenderedItems(items =>
+      updateItemInList({ ...item, ...position }, items)
+    );
   };
 
   return (
@@ -98,11 +101,15 @@ const EditableList = <ItemType extends Item>({
       keyboardShouldPersistTaps={'always'}
       {...panResponder.panHandlers}
     >
-      {items.map(item => (
+      {renderedItems.map(item => (
         <EditableListItem
           key={item.id}
-          itemRenderer={(): React.ReactElement => itemRenderer(item)}
-          onRender={updateItemPosition(item)}
+          itemRenderer={(): React.ReactElement => {
+            return itemRenderer(item);
+          }}
+          onRender={(position: LayoutPosition): void =>
+            updateItemPosition(item, position)
+          }
         ></EditableListItem>
       ))}
     </Animated.ScrollView>

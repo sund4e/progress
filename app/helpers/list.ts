@@ -1,7 +1,11 @@
 export type Item = {
   id: string;
+  [key: string]: unknown;
 };
-export const updateItemInList = (newItem: Item, list: Item[]): Item[] => {
+export const updateItemInList = <ItemType extends Item>(
+  newItem: ItemType,
+  list: ItemType[]
+): ItemType[] => {
   const index = list.findIndex(item => item.id === newItem.id);
   if (index === undefined) {
     return list;
