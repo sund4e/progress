@@ -8,6 +8,7 @@ import {
   GestureResponderEvent
 } from 'react-native';
 import { Item, updateItemInList } from '../../helpers/list';
+import { LayoutPosition, isOverPosition } from './helpers';
 
 export const styles = StyleSheet.create({
   item: {
@@ -21,13 +22,6 @@ export const styles = StyleSheet.create({
 export type Props<ItemType extends Item> = {
   items: ItemType[];
   itemRenderer: (item: ItemType) => React.ReactElement;
-};
-
-type LayoutPosition = {
-  screenX: number;
-  screenY: number;
-  width: number;
-  height: number;
 };
 
 export type EditableListItemProps = {
@@ -62,6 +56,7 @@ const EditableList = <ItemType extends Item>({
 }: Props<ItemType>): React.ReactElement => {
   type RenderItem = ItemType & { position?: LayoutPosition };
   const [renderedItems, setRenderedItems] = React.useState<RenderItem[]>(items);
+  const draggedItem = React.useRef<RenderItem>(null);
 
   React.useEffect(() => {
     setRenderedItems(items);
@@ -74,46 +69,85 @@ const EditableList = <ItemType extends Item>({
     });
   });
 
-  const panResponder = React.useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (gestureState: GestureResponderEvent) => {
-        const {
-          locationX,
-          locationY,
-          changedTouches
-        } = gestureState.nativeEvent;
+  const panResponder = React.useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (gestureState: GestureResponderEvent) => {
+          const {
+            locationX,
+            locationY,
+            changedTouches
+          } = gestureState.nativeEvent;
 
-        //Avoid catching event if multitouch gesture (e.g. tap)
-        if (changedTouches.length !== 1) {
-          console.log('tap', gestureState.nativeEvent);
-          return false;
+          //Avoid catching event if multitouch gesture (e.g. tap)
+          if (changedTouches.length !== 1) {
+            return false;
+          }
+
+          const itemTouched = getItemAtCooridate(locationX, locationY);
+          if (!itemTouched) {
+            return false;
+          }
+
+          draggedItem.current = itemTouched;
+          return true;
+        },
+        onPanResponderGrant: () => {
+          console.log('Grant');
+        },
+        onPanResponderMove: (gestureState: GestureResponderEvent) => {
+          const { locationX, locationY } = gestureState.nativeEvent;
+
+          const itemAtCooridnates = getItemAtCooridate(locationX, locationY);
+          if (itemAtCooridnates) {
+            console.log('onPanResponderMove', draggedItem);
+            const draggedItemIndex = renderedItems.findIndex(
+              item => item.id === draggedItem.current.id
+            );
+            const touchedItemIndex = renderedItems.findIndex(
+              item => item.id === itemAtCooridnates.id
+            );
+            const itemsWithoutDraggedItem = [
+              ...renderedItems.slice(0, draggedItemIndex),
+              ...renderedItems.slice(draggedItemIndex + 1)
+            ];
+
+            console.log('setRenderedItems', [
+              ...itemsWithoutDraggedItem.slice(0, touchedItemIndex),
+              draggedItem.current,
+              ...itemsWithoutDraggedItem.slice(touchedItemIndex + 1)
+            ]);
+            setRenderedItems([
+              ...itemsWithoutDraggedItem.slice(0, touchedItemIndex),
+              draggedItem.current,
+              ...itemsWithoutDraggedItem.slice(touchedItemIndex + 1)
+            ]);
+          }
+        },
+        onPanResponderEnd: () => {
+          console.log('End');
         }
+      }),
+    [renderedItems]
+  );
 
-        return true;
-      },
-      onPanResponderGrant: () => {
-        console.log('Grant');
-      },
-      onPanResponderMove: (gestureState: GestureResponderEvent) => {
-        const { locationX, locationY } = gestureState.nativeEvent;
-        console.log('onPanResponderMove', locationX, locationY);
-      },
-      onPanResponderRelease: () => {
-        console.log('Release');
-      }
-    })
-  ).current;
+  function getItemAtCooridate(x: number, y: number) {
+    return (
+      renderedItems &&
+      renderedItems.find(
+        item => item.position && isOverPosition(x, y, item.position)
+      )
+    );
+  }
 
   const updateItemPosition = (
     item: RenderItem,
     position: LayoutPosition
   ): void => {
-    setRenderedItems(items =>
-      updateItemInList({ ...item, ...position }, items)
-    );
+    setRenderedItems(items => updateItemInList({ ...item, position }, items));
   };
 
+  console.log('render');
   return (
     <Animated.ScrollView
       style={styles.listContainer}
