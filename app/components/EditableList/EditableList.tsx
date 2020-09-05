@@ -77,6 +77,21 @@ const EditableList = <ItemType extends Item>({
   const panResponder = React.useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (gestureState: GestureResponderEvent) => {
+        const {
+          locationX,
+          locationY,
+          changedTouches
+        } = gestureState.nativeEvent;
+
+        //Avoid catching event if multitouch gesture (e.g. tap)
+        if (changedTouches.length !== 1) {
+          console.log('tap', gestureState.nativeEvent);
+          return false;
+        }
+
+        return true;
+      },
       onPanResponderGrant: () => {
         console.log('Grant');
       },
