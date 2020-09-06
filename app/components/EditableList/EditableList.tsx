@@ -69,6 +69,8 @@ const EditableList = <ItemType extends Item>({
     });
   });
 
+        draggingEnabled.current = true;
+      }, ANIMATION_DURATION);
   const panResponder = React.useMemo(
     () =>
       PanResponder.create({
@@ -127,14 +129,14 @@ const EditableList = <ItemType extends Item>({
     [renderedItems]
   );
 
-  function getItemAtCooridate(x: number, y: number) {
+  const getItemAtCooridate = (x: number, y: number) => {
     return (
       renderedItems &&
       renderedItems.find(
         item => item.position && isOverPosition(x, y, item.position)
       )
     );
-  }
+  };
 
   const updateItemPosition = (
     item: RenderItem,
