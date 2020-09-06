@@ -73,18 +73,14 @@ const EditableList = <ItemType extends Item>({
     () =>
       PanResponder.create({
         onMoveShouldSetPanResponder: (gestureState: GestureResponderEvent) => {
-          const {
-            locationX,
-            locationY,
-            changedTouches
-          } = gestureState.nativeEvent;
+          const { pageX, pageY, changedTouches } = gestureState.nativeEvent;
 
           //Avoid catching event if multitouch gesture (e.g. tap)
           if (changedTouches.length !== 1) {
             return false;
           }
 
-          const itemTouched = getItemAtCooridate(locationX, locationY);
+          const itemTouched = getItemAtCooridate(pageX, pageY);
           if (!itemTouched) {
             return false;
           }
@@ -96,9 +92,9 @@ const EditableList = <ItemType extends Item>({
           console.log('Grant');
         },
         onPanResponderMove: (gestureState: GestureResponderEvent) => {
-          const { locationX, locationY } = gestureState.nativeEvent;
+          const { pageX, pageY } = gestureState.nativeEvent;
 
-          const itemAtCooridnates = getItemAtCooridate(locationX, locationY);
+          const itemAtCooridnates = getItemAtCooridate(pageX, pageY);
           if (itemAtCooridnates) {
             console.log('onPanResponderMove', draggedItem);
             const draggedItemIndex = renderedItems.findIndex(
