@@ -68,6 +68,15 @@ const EditableList = <ItemType extends Item>({
     });
   });
 
+  const getItemAtCooridate = (x: number, y: number): ItemType => {
+    return (
+      renderedItems &&
+      renderedItems.find(
+        item => item.position && isOverPosition(x, y, item.position)
+      )
+    );
+  };
+
   const panResponder = React.useMemo(
     () =>
       PanResponder.create({
@@ -123,15 +132,6 @@ const EditableList = <ItemType extends Item>({
       }),
     [renderedItems]
   );
-
-  const getItemAtCooridate = (x: number, y: number) => {
-    return (
-      renderedItems &&
-      renderedItems.find(
-        item => item.position && isOverPosition(x, y, item.position)
-      )
-    );
-  };
 
   const updateItemPosition = (
     item: RenderItem,
