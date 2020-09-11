@@ -7,7 +7,7 @@ import {
   Animated,
   GestureResponderEvent
 } from 'react-native';
-import { Item, updateItemInList } from '../../helpers/list';
+import { Item, updateItemInList, swapItemsInList } from '../../helpers/list';
 import { LayoutPosition, isOverPosition } from './helpers';
 
 const ANIMATION_DURATION = 200;
@@ -35,8 +35,6 @@ const EditableListItem = ({
   itemRenderer,
   onRender
 }: EditableListItemProps): React.ReactElement => {
-  const viewRef = React.useRef<View>();
-
   const onLayout = (event): void => {
     const { width, height, y, x } = event.nativeEvent.layout;
     onRender({ width, height, screenX: x, screenY: y });
@@ -104,24 +102,13 @@ const EditableList = <ItemType extends Item>({
             itemAtCooridnates &&
             itemAtCooridnates.id !== draggedItem.current.id
           ) {
-            const touchedItemIndex = renderedItems.findIndex(
-              item => item.id === itemAtCooridnates.id
-            );
-            const draggedItemIndex = renderedItems.findIndex(
-              item => item.id === draggedItem.current.id
-            );
-            const itemsWithoutDraggedItem = [
-              ...renderedItems.slice(0, draggedItemIndex),
-              ...renderedItems.slice(draggedItemIndex + 1)
-            ];
-
-            const items = [
-              ...itemsWithoutDraggedItem.slice(0, touchedItemIndex),
+            const newItems = swapItemsInList(
               draggedItem.current,
-              ...itemsWithoutDraggedItem.slice(touchedItemIndex)
-            ];
+              itemAtCooridnates,
+              renderedItems
+            );
 
-            setRenderedItems(items);
+            setRenderedItems(newItems);
 
             //Disable dragging for the time of the animation
             draggingEnabled.current = false;

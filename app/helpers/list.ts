@@ -12,3 +12,24 @@ export const updateItemInList = <ItemType extends Item>(
   }
   return [...list.slice(0, index), newItem, ...list.slice(index + 1)];
 };
+
+export const swapItemsInList = <ItemType extends Item>(
+  firstItem: ItemType,
+  secondItem: ItemType,
+  list: ItemType[]
+): ItemType[] => {
+  const firstItemIndex = list.findIndex(item => item.id === firstItem.id);
+  const secondItemIndex = list.findIndex(item => item.id === secondItem.id);
+  const itemsWithoutFirstItem = [
+    ...list.slice(0, firstItemIndex),
+    ...list.slice(firstItemIndex + 1)
+  ];
+
+  const newList = [
+    ...itemsWithoutFirstItem.slice(0, secondItemIndex),
+    firstItem,
+    ...itemsWithoutFirstItem.slice(secondItemIndex)
+  ];
+
+  return newList;
+};
