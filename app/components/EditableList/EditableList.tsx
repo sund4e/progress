@@ -92,9 +92,6 @@ const EditableList = <ItemType extends Item>({
           draggedItem.current = itemTouched;
           return true;
         },
-        onPanResponderGrant: () => {
-          console.log('Grant');
-        },
         onPanResponderMove: (gestureState: GestureResponderEvent) => {
           const { locationX, locationY } = gestureState.nativeEvent;
 
