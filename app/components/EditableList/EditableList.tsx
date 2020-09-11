@@ -10,6 +10,8 @@ import {
 import { Item, updateItemInList } from '../../helpers/list';
 import { LayoutPosition, isOverPosition } from './helpers';
 
+const ANIMATION_DURATION = 200;
+
 export const styles = StyleSheet.create({
   item: {
     flexDirection: 'row'
@@ -54,6 +56,7 @@ const EditableList = <ItemType extends Item>({
 }: Props<ItemType>): React.ReactElement => {
   type RenderItem = ItemType & { position?: LayoutPosition };
   const [renderedItems, setRenderedItems] = React.useState<RenderItem[]>(items);
+  const draggingEnabled = React.useRef(true);
   const draggedItem = React.useRef<RenderItem>(null);
 
   React.useEffect(() => {
@@ -63,12 +66,10 @@ const EditableList = <ItemType extends Item>({
   React.useLayoutEffect(() => {
     LayoutAnimation.configureNext({
       ...LayoutAnimation.Presets.easeInEaseOut,
-      duration: 200
+      duration: ANIMATION_DURATION
     });
   });
 
-        draggingEnabled.current = true;
-      }, ANIMATION_DURATION);
   const panResponder = React.useMemo(
     () =>
       PanResponder.create({
@@ -88,7 +89,6 @@ const EditableList = <ItemType extends Item>({
           if (!itemTouched) {
             return false;
           }
-
           draggedItem.current = itemTouched;
           return true;
         },
@@ -98,6 +98,9 @@ const EditableList = <ItemType extends Item>({
         onPanResponderMove: (gestureState: GestureResponderEvent) => {
           const { locationX, locationY } = gestureState.nativeEvent;
 
+          if (!draggingEnabled.current) {
+            return;
+          }
 
           const itemAtCooridnates = getItemAtCooridate(locationX, locationY);
           if (
@@ -123,10 +126,15 @@ const EditableList = <ItemType extends Item>({
 
             setRenderedItems(items);
 
+            //Disable dragging for the time of the animation
+            draggingEnabled.current = false;
+            setTimeout(() => {
+              draggingEnabled.current = true;
+            }, ANIMATION_DURATION);
           }
         },
         onPanResponderEnd: () => {
-          console.log('End');
+          draggedItem.current = null;
         }
       }),
     [renderedItems]
@@ -148,7 +156,6 @@ const EditableList = <ItemType extends Item>({
     setRenderedItems(items => updateItemInList({ ...item, position }, items));
   };
 
-  console.log('render');
   return (
     <Animated.ScrollView
       style={styles.listContainer}
