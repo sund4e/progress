@@ -26,7 +26,7 @@ export type Props<ItemType extends Item> = {
 
 export type EditableListItemProps = {
   itemRenderer: () => React.ReactElement;
-  onRender: (LayoutPosition) => void;
+  onRender: (postion: LayoutPosition) => void;
 };
 
 const EditableListItem = ({
@@ -35,16 +35,14 @@ const EditableListItem = ({
 }: EditableListItemProps): React.ReactElement => {
   const viewRef = React.useRef<View>();
 
-  const onLayout = (): void => {
-    console.log('onLayout');
-    viewRef.current &&
-      viewRef.current.measure((x, y, width, height, screenX, screenY) => {
-        onRender({ width, height, screenX, screenY });
-      });
+  const onLayout = (event): void => {
+    const { width, height, y, x } = event.nativeEvent.layout;
+    onRender({ width, height, screenX: x, screenY: y });
   };
 
   return (
-    <View ref={viewRef} onLayout={onLayout}>
+    //disable pointerEvents so that the parent (list) captures all the touches and the location in panresponder refers to the list not the list
+    <View onLayout={onLayout} pointerEvents="none">
       <View style={styles.item}>{itemRenderer()}</View>
     </View>
   );
@@ -75,14 +73,18 @@ const EditableList = <ItemType extends Item>({
     () =>
       PanResponder.create({
         onMoveShouldSetPanResponder: (gestureState: GestureResponderEvent) => {
-          const { pageX, pageY, changedTouches } = gestureState.nativeEvent;
+          const {
+            locationX,
+            locationY,
+            changedTouches
+          } = gestureState.nativeEvent;
 
           //Avoid catching event if multitouch gesture (e.g. tap)
           if (changedTouches.length !== 1) {
             return false;
           }
 
-          const itemTouched = getItemAtCooridate(pageX, pageY);
+          const itemTouched = getItemAtCooridate(locationX, locationY);
           if (!itemTouched) {
             return false;
           }
@@ -94,32 +96,33 @@ const EditableList = <ItemType extends Item>({
           console.log('Grant');
         },
         onPanResponderMove: (gestureState: GestureResponderEvent) => {
-          const { pageX, pageY } = gestureState.nativeEvent;
+          const { locationX, locationY } = gestureState.nativeEvent;
 
-          const itemAtCooridnates = getItemAtCooridate(pageX, pageY);
-          if (itemAtCooridnates) {
-            console.log('onPanResponderMove', draggedItem);
-            const draggedItemIndex = renderedItems.findIndex(
-              item => item.id === draggedItem.current.id
-            );
+
+          const itemAtCooridnates = getItemAtCooridate(locationX, locationY);
+          if (
+            itemAtCooridnates &&
+            itemAtCooridnates.id !== draggedItem.current.id
+          ) {
             const touchedItemIndex = renderedItems.findIndex(
               item => item.id === itemAtCooridnates.id
+            );
+            const draggedItemIndex = renderedItems.findIndex(
+              item => item.id === draggedItem.current.id
             );
             const itemsWithoutDraggedItem = [
               ...renderedItems.slice(0, draggedItemIndex),
               ...renderedItems.slice(draggedItemIndex + 1)
             ];
 
-            console.log('setRenderedItems', [
+            const items = [
               ...itemsWithoutDraggedItem.slice(0, touchedItemIndex),
               draggedItem.current,
-              ...itemsWithoutDraggedItem.slice(touchedItemIndex + 1)
-            ]);
-            setRenderedItems([
-              ...itemsWithoutDraggedItem.slice(0, touchedItemIndex),
-              draggedItem.current,
-              ...itemsWithoutDraggedItem.slice(touchedItemIndex + 1)
-            ]);
+              ...itemsWithoutDraggedItem.slice(touchedItemIndex)
+            ];
+
+            setRenderedItems(items);
+
           }
         },
         onPanResponderEnd: () => {
