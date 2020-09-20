@@ -7,7 +7,7 @@ export const updateItemInList = <ItemType extends Item>(
   list: ItemType[]
 ): ItemType[] => {
   const index = list.findIndex(item => item.id === newItem.id);
-  if (index === undefined) {
+  if (index === -1) {
     return list;
   }
   return [...list.slice(0, index), newItem, ...list.slice(index + 1)];
