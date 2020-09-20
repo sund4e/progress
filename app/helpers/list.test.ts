@@ -1,4 +1,4 @@
-import { updateItemInList, swapItemsInList } from './list';
+import { updateItemInList, moveItemInList } from './list';
 import { RenderItem, LayoutPosition } from '../tests/mocks/factories';
 
 describe('updateItemInList', () => {
@@ -21,5 +21,21 @@ describe('updateItemInList', () => {
     const updatedItem = RenderItem.build();
     const updatedList = updateItemInList(updatedItem, list);
     expect(updatedList).toEqual(list);
+  });
+});
+
+describe('swapItemsInList', () => {
+  it('updates item if it exists in list', () => {
+    const firstItem = RenderItem.build();
+    const secondItem = RenderItem.build();
+    const thirdItem = RenderItem.build();
+    const fourthItem = RenderItem.build();
+    const list = [firstItem, secondItem, thirdItem, fourthItem];
+    const updatedList = moveItemInList(secondItem, 3, list);
+    expect(updatedList.length).toEqual(list.length);
+    expect(updatedList[0]).toEqual(firstItem);
+    expect(updatedList[1]).toEqual(thirdItem);
+    expect(updatedList[2]).toEqual(fourthItem);
+    expect(updatedList[3]).toEqual(secondItem);
   });
 });

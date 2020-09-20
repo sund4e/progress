@@ -7,7 +7,7 @@ import {
   Animated,
   GestureResponderEvent
 } from 'react-native';
-import { Item, updateItemInList, swapItemsInList } from '../../helpers/list';
+import { Item, updateItemInList, moveItemInList } from '../../helpers/list';
 import { LayoutPosition, isOverPosition } from './helpers';
 
 const ANIMATION_DURATION = 200;
@@ -116,9 +116,9 @@ const EditableList = <ItemType extends Item>({
             itemAtCooridnates &&
             itemAtCooridnates.id !== draggedItem.current.id
           ) {
-            const newItems = swapItemsInList(
+            const newItems = moveItemInList(
               draggedItem.current,
-              itemAtCooridnates,
+              renderedItems.findIndex(item => item.id === itemAtCooridnates.id),
               renderedItems
             );
 
