@@ -21,6 +21,10 @@ export const styles = StyleSheet.create({
   }
 });
 
+export type RenderItem<ItemType extends Item> = ItemType & {
+  position?: LayoutPosition;
+};
+
 export type Props<ItemType extends Item> = {
   items: ItemType[];
   itemRenderer: (item: ItemType) => React.ReactElement;
@@ -52,10 +56,11 @@ const EditableList = <ItemType extends Item>({
   items,
   itemRenderer
 }: Props<ItemType>): React.ReactElement => {
-  type RenderItem = ItemType & { position?: LayoutPosition };
-  const [renderedItems, setRenderedItems] = React.useState<RenderItem[]>(items);
+  const [renderedItems, setRenderedItems] = React.useState<
+    RenderItem<ItemType>[]
+  >(items);
   const draggingEnabled = React.useRef(true);
-  const draggedItem = React.useRef<RenderItem>(null);
+  const draggedItem = React.useRef<RenderItem<ItemType>>(null);
 
   React.useEffect(() => {
     setRenderedItems(items);
@@ -134,7 +139,7 @@ const EditableList = <ItemType extends Item>({
   );
 
   const updateItemPosition = (
-    item: RenderItem,
+    item: RenderItem<ItemType>,
     position: LayoutPosition
   ): void => {
     setRenderedItems(items => updateItemInList({ ...item, position }, items));
