@@ -1,33 +1,25 @@
 import React from 'react';
-import renderer, { ReactTestInstance, act } from 'react-test-renderer';
-import { View, TouchableWithoutFeedback } from 'react-native';
-import { RenderItem, LayoutPosition } from '../../tests/mocks/factories';
-import { Item, updateItemInList, moveItemInList } from '../../helpers/list';
+import renderer, { ReactTestInstance } from 'react-test-renderer';
+import { View } from 'react-native';
+import { RenderItem } from '../../tests/mocks/factories';
+import { Item } from '../../helpers/list';
 
-import EditableList, { Props, ItemRendererProps } from './EditableList';
+import EditableList, { Props } from './EditableList';
 
 const ChildComponent = ({
-  keyValue,
-  value,
-  isFocused
+  keyValue
 }: {
   keyValue: string;
-  value: string;
-  isFocused: boolean;
 }): React.ReactElement => {
-  return <View key={keyValue}>{isFocused && value}</View>;
+  return <View key={keyValue}>id</View>;
 };
 
 const render = (override: Partial<Props<Item>>): ReactTestInstance => {
-  const items = [RenderItem.build(), RenderItem.build()];
+  const items = [];
   const props = {
     items,
-    itemRenderer: (props: ItemRendererProps): React.ReactElement => (
-      <ChildComponent
-        keyValue={props.key}
-        value={props.value}
-        isFocused={props.isFocused}
-      />
+    itemRenderer: (item: Item): React.ReactElement => (
+      <ChildComponent keyValue={item.id} />
     ),
     onRemoveItem: (): void => {},
     ...override
@@ -37,11 +29,11 @@ const render = (override: Partial<Props<Item>>): ReactTestInstance => {
 
 describe('EditableList', () => {
   fit('renders items with item renderer', () => {
-    const items = [];
+    const items = [RenderItem.build(), RenderItem.build()];
     const element = render({ items });
     element.findAllByType(ChildComponent).forEach(child => {
-      const value = items.get(child.props.keyValue);
-      expect(child.props.value).toEqual(value);
+      const value = items.find(item => item.id === child.props.keyValue);
+      expect(child.props.keyValue).toEqual(value.id);
     });
   });
 });
