@@ -19,6 +19,12 @@ export const styles = StyleSheet.create({
   }
 });
 
+type Move = {
+  id: string;
+  name: string;
+  isFocused: boolean;
+};
+
 export type Props = {
   workout: string[];
   onSubmitWorkout?: (workout: string[]) => void;
@@ -51,11 +57,16 @@ export default function CreateWorkoutView({
     setMoves([...moves.slice(0, index), ...moves.slice(index + 1)]);
   };
 
+  const onChangeMoves = (newMoves: Move[]): void => {
+    setMoves(newMoves);
+  };
+
   return (
     // <Container>
     <View style={styles.itemContainer}>
       <EditableList
         items={moves}
+        setItems={onChangeMoves}
         itemRenderer={(item): React.ReactElement => (
           <>
             <Input

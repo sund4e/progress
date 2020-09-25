@@ -27,6 +27,7 @@ export type RenderItem<ItemType extends Item> = ItemType & {
 
 export type Props<ItemType extends Item> = {
   items: ItemType[];
+  setItems: (items: ItemType[]) => void;
   itemRenderer: (item: ItemType) => React.ReactElement;
 };
 
@@ -54,6 +55,7 @@ const EditableListItem = ({
 
 const EditableList = <ItemType extends Item>({
   items,
+  setItems,
   itemRenderer
 }: Props<ItemType>): React.ReactElement => {
   const [renderedItems, setRenderedItems] = React.useState<
@@ -122,7 +124,7 @@ const EditableList = <ItemType extends Item>({
               renderedItems
             );
 
-            setRenderedItems(newItems);
+            setItems(newItems);
 
             //Disable dragging for the time of the animation
             draggingEnabled.current = false;

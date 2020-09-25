@@ -22,6 +22,7 @@ const render = (override: Partial<Props<Item>>): ReactTestInstance => {
       <ChildComponent keyValue={item.id} />
     ),
     onRemoveItem: (): void => {},
+    setItems: jest.fn(),
     ...override
   };
   return renderer.create(<EditableList {...props} />).root;
