@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import uuid from '../lib/uuid';
 import Input from '../components/Input/Input';
-import Container from '../components/container/container';
+// import Container from '../components/container/container';
 import Icon from '../components/Icon/Icon';
 import EditableList from '../components/EditableList/EditableList';
 
@@ -86,7 +86,7 @@ export default function CreateWorkoutView({
       />
       <Icon name="plus" onPress={onAddMove} />
     </View>
-    // <Icon name="check" onPress={(): void => {}} />
+    //   <Icon name="check" onPress={(): void => {}} />
     // </Container>
   );
 }
