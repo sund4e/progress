@@ -33,6 +33,14 @@ const styles = StyleSheet.create({
   }
 });
 
+//LayoutAnimation needs to be separately set for Android
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 export default function App(): React.ReactElement {
   const [state, dispatch] = useReducer(reducer, { todos: [] });
 
