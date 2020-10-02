@@ -4,10 +4,10 @@ import { TextInput } from 'react-native';
 import Input, { styles, Props } from './Input';
 
 jest.mock('react-native/Libraries/Components/TextInput/TextInput', () => {
-  const RealComponent = require.requireActual(
+  const RealComponent = jest.requireActual(
     'react-native/Libraries/Components/TextInput/TextInput'
   );
-  const React = require.requireActual('react');
+  const React = jest.requireActual('react');
   const setNativePropsSpy = jest.fn();
   const focusSpy = jest.fn();
 
