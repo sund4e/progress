@@ -1,5 +1,12 @@
 import React, { useReducer, useEffect } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  UIManager,
+  Platform
+} from 'react-native';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
 import { createTodo } from '../src/graphql/mutations';
