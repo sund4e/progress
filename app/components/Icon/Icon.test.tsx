@@ -14,7 +14,7 @@ const render = (overrideProps: Partial<Props> = {}): ReactTestInstance => {
   return renderer.create(<Icon {...props} />).root;
 };
 
-describe('Container', () => {
+describe('Icon', () => {
   it('passes in icon name', () => {
     const name = 'minus';
     const element = render({ name });
