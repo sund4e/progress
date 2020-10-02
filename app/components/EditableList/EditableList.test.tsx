@@ -1,81 +1,40 @@
 import React from 'react';
-import renderer, { ReactTestInstance, act } from 'react-test-renderer';
-import { View, TouchableWithoutFeedback } from 'react-native';
+import renderer, { ReactTestInstance } from 'react-test-renderer';
+import { View } from 'react-native';
+import { RenderItem } from '../../tests/mocks/factories';
+import { Item } from '../../helpers/list';
 
-import EditableList, { Props, ItemRendererProps } from './EditableList';
+import EditableList, { Props } from './EditableList';
 
 const ChildComponent = ({
-  keyValue,
-  value,
-  isFocused
+  keyValue
 }: {
   keyValue: string;
-  value: string;
-  isFocused: boolean;
 }): React.ReactElement => {
-  return <View key={keyValue}>{isFocused && value}</View>;
+  return <View key={keyValue}>id</View>;
 };
 
-const render = (override: Partial<Props>): ReactTestInstance => {
-  const items = new Map();
+const render = (override: Partial<Props<Item>>): ReactTestInstance => {
+  const items = [];
   const props = {
     items,
-    itemRenderer: (props: ItemRendererProps): React.ReactElement => (
-      <ChildComponent
-        keyValue={props.key}
-        value={props.value}
-        isFocused={props.isFocused}
-      />
+    itemRenderer: (item: Item): React.ReactElement => (
+      <ChildComponent keyValue={item.id} />
     ),
     onRemoveItem: (): void => {},
+    setItems: jest.fn(),
     ...override
   };
   return renderer.create(<EditableList {...props} />).root;
 };
 
 describe('EditableList', () => {
-  it('renders items with item renderer', () => {
-    const items = new Map([
-      ['key1', 'value1'],
-      ['key2', 'value2']
-    ]);
+  fit('renders items with item renderer', () => {
+    const items = [RenderItem.build(), RenderItem.build()];
     const element = render({ items });
     element.findAllByType(ChildComponent).forEach(child => {
-      const value = items.get(child.props.keyValue);
-      expect(child.props.value).toEqual(value);
-    });
-  });
-
-  describe('itemRenderer isFocused', () => {
-    const items = new Map([
-      ['key1', 'value1'],
-      ['key2', 'value2']
-    ]);
-    const element = render({ items });
-    const getFirstRenderedItem = (element): ReactTestInstance => {
-      return element.findAllByType(TouchableWithoutFeedback)[0];
-    };
-
-    it('passes initially false', () => {
-      expect(
-        getFirstRenderedItem(element).findByType(ChildComponent).props.isFocused
-      ).toBeFalsy();
-    });
-
-    it('passes true upon long press for the item', () => {
-      act(() => getFirstRenderedItem(element).props.onLongPress());
-      expect(
-        getFirstRenderedItem(element).findByType(ChildComponent).props.isFocused
-      ).toBeTruthy();
-    });
-
-    it('passes false upon pressing other item', () => {
-      act(() =>
-        element.findAllByType(TouchableWithoutFeedback)[1].props.onPress()
-      );
-      expect(
-        getFirstRenderedItem(element).findByType(ChildComponent).props.isFocused
-      ).toBeFalsy();
+      const value = items.find(item => item.id === child.props.keyValue);
+      expect(child.props.keyValue).toEqual(value.id);
     });
   });
 });
